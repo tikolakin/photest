@@ -2,12 +2,27 @@
   "name": "phorest-photest",
   "version": "1.0.0",
   "description": "Phorest test automation exercise",
+  "author": "TikoQA",
   "scripts": {
     "open": "cypress open",
-    "test": "cypress run"
+    "test": "cypress run",
+    "debug": "DEBUG=cypress:server:specs npx cypress open",
+    "lint": "eslint . --ext \"*.{js,ts,json}\"",
+    "prettier": "prettier \"**/*.+(js|ts|json)\"",
+    "format": "npm run prettier -- --write && npm run lint -- --fix"
   },
-  "author": "TikoQA",
   "devDependencies": {
-    "cypress": "^12.17.0"
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "cypress": "^12.17.0",
+    "eslint": "^8.44.0",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-cypress": "^2.13.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.8",
+    "typescript": "^5.1.6"
   }
 }
