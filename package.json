@@ -1,0 +1,13 @@
+{
+  "name": "phorest-photest",
+  "version": "1.0.0",
+  "description": "Phorest test automation exercise",
+  "scripts": {
+    "open": "cypress open",
+    "test": "cypress run"
+  },
+  "author": "TikoQA",
+  "devDependencies": {
+    "cypress": "^12.17.0"
+  }
+}
