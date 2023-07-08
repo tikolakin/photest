@@ -2,7 +2,13 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node"]
+    "types": ["cypress", "node", "cypress-iframe"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["page-object/pages/*"],
+      "@components/*": ["page-object/components/*"]
+      //"@utils/*": ["src/utils/*"]
+    }
   },
   "include": ["**/*.ts"]
 }

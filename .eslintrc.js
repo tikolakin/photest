@@ -16,7 +16,9 @@ module.exports = {
   ],
   settings: {
     'import/resolver': {
-      typescript: {},
+      typescript: {
+        project: 'cypress/tsconfig.json',
+      },
     },
   },
   rules: {
@@ -34,5 +36,7 @@ module.exports = {
         version: `>=18.16.0`,
       },
     ],
+    'node/no-missing-import': 'off',
+    'node/no-unpublished-import': 'off',
   },
 }
