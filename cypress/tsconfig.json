@@ -2,12 +2,12 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["es5", "dom"],
-    "types": ["cypress", "node", "cypress-iframe"],
+    "types": ["cypress", "node", "cypress-iframe", "cypress-map"],
     "baseUrl": ".",
     "paths": {
-      "@pages/*": ["page-object/pages/*"],
-      "@components/*": ["page-object/components/*"]
-      //"@utils/*": ["src/utils/*"]
+      "@pages": ["page-object/pages/index.ts"],
+      "@components": ["page-object/components/index.ts"],
+      "@utils": ["utils/index.ts"]
     }
   },
   "include": ["**/*.ts"]

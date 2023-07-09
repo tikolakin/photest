@@ -1,10 +1,13 @@
-import { CheckoutSummary } from '@pages/CheckoutSummary'
-import CheckoutSuccess from '@pages/CheckoutSuccess'
+import { CheckoutSummary } from '@components'
+import { BasePage, CheckoutSuccess } from '@pages'
 
-class CheckoutPayment extends CheckoutSummary {
+export default class CheckoutPayment extends BasePage {
+  path = '#payment'
+  summary: CheckoutSummary
+
   constructor() {
     super()
-    this.path = '#payment'
+    this.summary = new CheckoutSummary()
   }
 
   get paymentIframe() {
@@ -60,10 +63,18 @@ class CheckoutPayment extends CheckoutSummary {
     return this
   }
 
-  submitOrder() {
+  submitOrder(failure?: true) {
     this.submitButton.click()
-    return CheckoutSuccess
+
+    this.loadingSpinner.as('loader')
+    cy.get('@loader').should('be.visible')
+
+    if (failure) return
+
+    cy.get('@loader', {
+      timeout: Cypress.config('defaultCommandTimeout') * 4, // occasionally it takes long time to process order payment
+    }).should('not.exist')
+
+    return new CheckoutSuccess()
   }
 }
-
-export default new CheckoutPayment()

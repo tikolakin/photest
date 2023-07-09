@@ -1,10 +1,25 @@
-import { BasePage } from '@pages/BasePage'
+import { BasePage, GiftCardPage } from '@pages'
 
-class CheckoutSuccess extends BasePage {
+export default class CheckoutSuccess extends BasePage {
+  path = '#success'
+
   constructor() {
     super()
-    this.path = '#success'
+  }
+
+  get successContainer() {
+    return cy.get('[data-controller="success"]', {
+      timeout: Cypress.config('defaultCommandTimeout') * 2, // Order processing might be longer
+    })
+  }
+
+  get doneButton() {
+    return cy.get('[data-action="application#doneAction"]')
+  }
+
+  clickDone() {
+    this.doneButton.click()
+    this.loadingSpinner.should('be.visible')
+    return new GiftCardPage()
   }
 }
-
-export default new CheckoutSuccess()

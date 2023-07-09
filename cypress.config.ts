@@ -2,7 +2,6 @@ import { defineConfig } from 'cypress'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-
 const BASE_URL: string = process.env.BASE_URL || ''
 const TESTMAIL_NAME_SPACE: string = process.env.TESTMAIL_NAME_SPACE || ''
 const TESTMAIL_API_KEY: string = process.env.TESTMAIL_API_KEY || ''

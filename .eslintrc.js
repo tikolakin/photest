@@ -23,12 +23,7 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': 'error',
-    'node/no-unpublished-import': [
-      'error',
-      {
-        allowModules: ['cypress'],
-      },
-    ],
+    'node/no-unpublished-import': 'off',
     'node/no-unsupported-features/es-syntax': [
       'error',
       {
@@ -37,6 +32,5 @@ module.exports = {
       },
     ],
     'node/no-missing-import': 'off',
-    'node/no-unpublished-import': 'off',
   },
 }

@@ -1,7 +1,8 @@
-import { BasePage } from '@pages/BasePage'
-import CheckoutSummary from '@pages/CheckoutSummary'
+import { BasePage, CheckoutConfirm } from '@pages'
 
-class GiftCardPage extends BasePage {
+export default class GiftCardPage extends BasePage {
+  path = '#'
+
   constructor() {
     super()
   }
@@ -69,8 +70,7 @@ class GiftCardPage extends BasePage {
 
   continueToCheckout() {
     this.checkoutButton.click()
-    return CheckoutSummary
+    this.loadingSpinner.should('be.visible')
+    return new CheckoutConfirm()
   }
 }
-
-export default new GiftCardPage()
