@@ -6,7 +6,6 @@ const BASE_URL: string = process.env.BASE_URL || ''
 const TESTMAIL_NAME_SPACE: string = process.env.TESTMAIL_NAME_SPACE || ''
 const TESTMAIL_API_KEY: string = process.env.TESTMAIL_API_KEY || ''
 
-// TODO: resolve base url based on env
 export default defineConfig({
   fixturesFolder: 'cypress/fixtures',
   modifyObstructiveCode: false,
@@ -16,7 +15,6 @@ export default defineConfig({
   numTestsKeptInMemory: 0, // Disabling snapshotting as this feature causing rerendering of the giftcard checkout page, see https://github.com/cypress-io/cypress/issues/7187
   e2e: {
     baseUrl: BASE_URL,
-    experimentalStudio: true,
   },
   viewportWidth: 1280,
   viewportHeight: 800,

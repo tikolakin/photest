@@ -5,7 +5,7 @@
   "author": "TikoQA",
   "scripts": {
     "open": "cypress open",
-    "test": "cypress run",
+    "test": "cypress run --browser \"${BROWSER:-chrome}\"",
     "debug": "DEBUG=cypress:server:specs npx cypress open",
     "lint": "eslint . --ext \"*.{js,ts,json}\"",
     "prettier": "prettier \"**/*.+(js|ts|json)\"",

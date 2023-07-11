@@ -1,0 +1,50 @@
+name: Cypress Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      grep:
+        description: 'tests to grep '
+        required: false
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+      browser:
+        description: 'Browser to run tests'
+        type: choice
+        required: true
+        default: chrome
+        options:
+          - chrome
+          - firefox
+          - edge
+          - electron
+
+env:
+  TESTMAIL_API_KEY: ${{ secrets.TESTMAIL_API_KEY }}
+  TESTMAIL_NAME_SPACE: ${{ secrets.TESTMAIL_NAME_SPACE }}
+  BASE_URL: ${{ secrets.BASE_URL }}
+  ENVIRON: ${{ github.event.inputs.environment }}
+  BROWSER: ${{ github.event.inputs.browser }}
+
+jobs:
+  cypress-run:
+    name: Run tests on ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install dependencies
+        run: npm i
+      - name: Run target tests
+        if: inputs.grep
+        run: npm run test -- --env grep="${{ inputs.grep }}"
+      - name: Run all tests
+        if: inputs.grep == null
+        run: npm run test
