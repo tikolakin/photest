@@ -43,6 +43,10 @@ export default class GiftCardPage extends BasePage {
     return cy.get('[data-target="checkout.price"]')
   }
 
+  get checkoutPrice() {
+    return cy.get('[data-target="checkout.price"]')
+  }
+
   selectCardValue(option: number | 'other', value?) {
     if (value) {
       this.otherOption.check()

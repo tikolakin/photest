@@ -1,4 +1,4 @@
-import * as Chance from 'chance'
+import { Chance } from 'chance'
 
 const chance = new Chance()
 
@@ -50,6 +50,7 @@ export default class EmailClient {
       method: 'GET',
       url: this.ENDPOINT,
       qs: params,
+      timeout: Cypress.config('responseTimeout') * 3 // Testmail could be slow
     }).then((res) => {
       if (filter?.subject) {
         const filteredEmail = res.body.emails.filter((email) => {

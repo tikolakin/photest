@@ -3,11 +3,13 @@
     "target": "es5",
     "lib": ["es5", "dom"],
     "types": ["cypress", "node", "cypress-iframe", "cypress-map"],
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@pages": ["page-object/pages/index.ts"],
       "@components": ["page-object/components/index.ts"],
-      "@utils": ["utils/index.ts"]
+      "@utils": ["utils/index.ts"],
+      "@fixtures/*": ["fixtures/*"]
     }
   },
   "include": ["**/*.ts"]

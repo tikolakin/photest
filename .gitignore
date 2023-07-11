@@ -1,2 +1,8 @@
 node_modules
 .vscode
+.env
+cypress/screenshots
+cypress/videos
+cypress/downloads
+cypress/e2e/1*
+cypress/e2e/2*

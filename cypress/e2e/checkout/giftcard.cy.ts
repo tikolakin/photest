@@ -1,44 +1,76 @@
 import { GiftCardPage } from '@pages'
-import { EmailClient } from '@utils'
+import { User, EmailClient } from '@utils'
+import { demoUS } from '@fixtures/salons.json'
+import { validVisa } from '@fixtures/test-cards.json'
 
 describe('Purchase a Gift Card', function () {
   it('send to me @severity:critical', function () {
     const testData: { [key: string]: any } = {}
+    testData.salon = demoUS
+    const testUser = new User()
     const giftCardPage = new GiftCardPage()
     const emailClient = new EmailClient()
 
-    testData.userEmail = emailClient.getEmailAddress()
-    testData.firstName = 'Tiko'
-    testData.lastName = 'Lakin'
     testData.expectedVoucherValue = 50
-    testData.salon = {
-      managerEmail: 'arden-courts@phorest.com',
-      managerName: 'Arden Courts',
-      brandName: 'Demo US',
-      salonEmail: 'new-york-salon@phorest.com',
-    }
+    testData.currency = '$'
 
     giftCardPage.visit()
     giftCardPage.title.should('have.text', 'Buy a Gift Card')
+    giftCardPage.checkoutButton
+      .invoke('css', 'cursor')
+      .should('eq', 'not-allowed');
+
     giftCardPage
       .selectCardValue(testData.expectedVoucherValue)
-      .fillEmail(testData.userEmail)
-      .fillFirstName(testData.firstName)
-      .fillLastName(testData.lastName)
+      .checkoutPrice.should(
+        'include.text',
+        `${testData.currency + testData.expectedVoucherValue}.00`,
+      )
+
+    giftCardPage
+      .selectCardValue('other', testData.expectedVoucherValue = 777)
+      .checkoutPrice.should(
+        'include.text',
+        `${testData.currency + testData.expectedVoucherValue}.00`,
+      )
+    
+    giftCardPage
+      .fillEmail(testUser.billingAddress.email)
+      .fillFirstName(testUser.billingAddress.firstName)
+      .fillLastName(testUser.billingAddress.lastName)
+      .checkoutButton
+      .invoke('css', 'cursor')
+      .should('eq', 'pointer');
 
     const summaryPage = giftCardPage.continueToCheckout()
     summaryPage.title.should('have.text', 'Summary')
-    // TODO verify correct info is shown
+    summaryPage.summary.editButton.should('be.visible')
+    summaryPage.summary.voucherValue.should(
+      'include.text',
+      `${testData.currency + testData.expectedVoucherValue}.00`,
+    )
+    summaryPage.summary.paymentAmount.should(
+      'include.text',
+      `${testData.currency + testData.expectedVoucherValue}.00`,
+    )
+    summaryPage.summary.purchaserEmail.should(
+      'include.text',
+      testUser.billingAddress.email,
+    )
+    summaryPage.summary.recipientEmail.should(
+      'include.text',
+      testUser.billingAddress.email,
+    )
 
     const paymentPage = summaryPage.confirmDetails()
     paymentPage.title.should('have.text', 'Checkout')
-    // TODO verify correct info is shown
+    // TODO verify correct info is shown again?
     const successPage = paymentPage
-      .fillName('Tiko')
-      .fillZipCode('12345')
-      .fillNumber('4111111111111111')
-      .fillExpiryDate('10/23')
-      .fillCvv('999')
+      .fillName(testUser.billingAddress.firstName)
+      .fillZipCode(validVisa.zipCode)
+      .fillNumber(validVisa.number)
+      .fillExpiryDate(validVisa.expiry)
+      .fillCvv(validVisa.cvv)
       .submitOrder()
 
     successPage.title.should('have.text', 'Purchase Complete')
@@ -65,6 +97,16 @@ describe('Purchase a Gift Card', function () {
 
     cy.location('hash').should('eq', giftCardPage.path)
     giftCardPage.title.should('have.text', 'Buy a Gift Card')
+    giftCardPage.checkoutButton
+      .invoke('css', 'cursor')
+      .should('eq', 'not-allowed');
+
+    // Checking a fresh checkout is ready
+    giftCardPage
+      .checkoutPrice.should(
+        'include.text',
+        `${testData.currency}0.00`,
+      )
 
     // Verify order confirmation email
     cy.then(function () {
@@ -74,7 +116,7 @@ describe('Purchase a Gift Card', function () {
         ),
       })
     }).then(function () {
-      //expect(emailClient.getEmailSender()).to.eq(testData.salon.managerEmail)
+      expect(emailClient.getEmailSender()).to.eq(testData.salon.managerEmail)
       cy.intercept(
         'giftcard',
         { hostname: 'giftcard-stub' },
@@ -88,7 +130,6 @@ describe('Purchase a Gift Card', function () {
     cy.visit('http://giftcard-stub/giftcard')
       .get('body')
       .then(function (body) {
-        console.log('tiko testData', testData)
         const text = body.text()
         expect(text).to.match(
           new RegExp(`.*Card number: ${testData.actualVoucherCode}.*`),
