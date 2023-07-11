@@ -56,12 +56,14 @@ export default class EmailClient {
           return filter.subject.test(email.subject)
         })
         if (filteredEmail.length !== 0) {
-          return (this.emailData = filteredEmail.pop())
+          this.emailData = filteredEmail.pop()
+          return this.emailData
         }
         return {}
       }
       if (res.body.emails.length !== 0) {
-        return (this.emailData = res.body.emails.pop())
+        this.emailData = res.body.emails.pop()
+        return this.emailData
       }
       return {}
     })

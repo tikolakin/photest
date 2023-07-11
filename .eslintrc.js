@@ -32,5 +32,6 @@ module.exports = {
       },
     ],
     'node/no-missing-import': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 }

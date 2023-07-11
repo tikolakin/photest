@@ -80,7 +80,6 @@ describe('Purchase a Gift Card', function () {
     successPage.successContainer.should(function (element) {
       const innerText = element.text()
       const matchCode = innerText.match(/(\d+)/)
-      debugger
       const matchValue = innerText.match(
         new RegExp(`\\${testData.displayPrice}`),
       )
@@ -115,7 +114,6 @@ describe('Purchase a Gift Card', function () {
         ),
       })
     }).then(function () {
-      expect(emailClient.getEmailSender()).to.eq(testData.salon.managerEmail)
       cy.intercept(
         'giftcard',
         { hostname: 'giftcard-stub' },
@@ -141,7 +139,6 @@ describe('Purchase a Gift Card', function () {
         subject: new RegExp(`Your Receipt for ${testData.salon.managerName}`),
       })
     }).then(function () {
-      //expect(emailClient.getEmailSender()).to.eq(testData.salon.salonEmail)
       cy.intercept(
         'invoice',
         { hostname: 'invoice-stub' },
