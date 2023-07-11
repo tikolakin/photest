@@ -7,51 +7,52 @@ describe('Purchase a Gift Card', function () {
   it('send to me @severity:critical', function () {
     const testData: { [key: string]: any } = {}
     testData.salon = demoUS
-    const testUser = new User()
     const giftCardPage = new GiftCardPage()
     const emailClient = new EmailClient()
+    const testUser = new User()
+    testUser.billingAddress.email = emailClient.getEmailAddress()
 
     testData.expectedVoucherValue = 50
     testData.currency = '$'
+    testData.displayPrice = `${
+      testData.currency + testData.expectedVoucherValue
+    }.00`
 
     giftCardPage.visit()
     giftCardPage.title.should('have.text', 'Buy a Gift Card')
     giftCardPage.checkoutButton
       .invoke('css', 'cursor')
-      .should('eq', 'not-allowed');
+      .should('eq', 'not-allowed')
 
     giftCardPage
       .selectCardValue(testData.expectedVoucherValue)
-      .checkoutPrice.should(
-        'include.text',
-        `${testData.currency + testData.expectedVoucherValue}.00`,
-      )
+      .checkoutPrice.should('include.text', testData.displayPrice)
 
+    testData.expectedVoucherValue = 777
+    testData.displayPrice = `${
+      testData.currency + testData.expectedVoucherValue
+    }.00`
     giftCardPage
-      .selectCardValue('other', testData.expectedVoucherValue = 777)
-      .checkoutPrice.should(
-        'include.text',
-        `${testData.currency + testData.expectedVoucherValue}.00`,
-      )
-    
+      .selectCardValue('other', testData.expectedVoucherValue)
+      .checkoutPrice.should('include.text', testData.displayPrice)
+
     giftCardPage
       .fillEmail(testUser.billingAddress.email)
       .fillFirstName(testUser.billingAddress.firstName)
       .fillLastName(testUser.billingAddress.lastName)
-      .checkoutButton
-      .invoke('css', 'cursor')
-      .should('eq', 'pointer');
+      .checkoutButton.invoke('css', 'cursor')
+      .should('eq', 'pointer')
 
     const summaryPage = giftCardPage.continueToCheckout()
     summaryPage.title.should('have.text', 'Summary')
     summaryPage.summary.editButton.should('be.visible')
     summaryPage.summary.voucherValue.should(
       'include.text',
-      `${testData.currency + testData.expectedVoucherValue}.00`,
+      testData.displayPrice,
     )
     summaryPage.summary.paymentAmount.should(
       'include.text',
-      `${testData.currency + testData.expectedVoucherValue}.00`,
+      testData.displayPrice,
     )
     summaryPage.summary.purchaserEmail.should(
       'include.text',
@@ -79,7 +80,10 @@ describe('Purchase a Gift Card', function () {
     successPage.successContainer.should(function (element) {
       const innerText = element.text()
       const matchCode = innerText.match(/(\d+)/)
-      const matchValue = innerText.match(/([$£€])(\d+)\.(\d+)/)
+      debugger
+      const matchValue = innerText.match(
+        new RegExp(`\\${testData.displayPrice}`),
+      )
 
       expect(matchCode.length).to.be.gt(0, 'Failed to find voucher code')
       const actualVoucherCode = matchCode[1]
@@ -87,10 +91,6 @@ describe('Purchase a Gift Card', function () {
       testData.actualVoucherCode = actualVoucherCode
 
       expect(matchValue.length).to.be.gt(0, 'Failed to find voucher value')
-      const actualVoucherValue = matchValue[0]
-      // TODO verify voucher value with currency
-      //expect(actualVoucherValue).to.match(/testData.expectedVoucherValue)
-      testData.voucherValue = actualVoucherValue
     })
 
     successPage.clickDone()
@@ -99,20 +99,19 @@ describe('Purchase a Gift Card', function () {
     giftCardPage.title.should('have.text', 'Buy a Gift Card')
     giftCardPage.checkoutButton
       .invoke('css', 'cursor')
-      .should('eq', 'not-allowed');
+      .should('eq', 'not-allowed')
 
     // Checking a fresh checkout is ready
-    giftCardPage
-      .checkoutPrice.should(
-        'include.text',
-        `${testData.currency}0.00`,
-      )
+    giftCardPage.checkoutPrice.should(
+      'include.text',
+      `${testData.currency}0.00`,
+    )
 
     // Verify order confirmation email
     cy.then(function () {
       return emailClient.fetchEmail({
         subject: new RegExp(
-          `You've been sent a \\${testData.voucherValue} gift card for ${testData.salon.brandName}!`,
+          `You've been sent a \\${testData.displayPrice} gift card for ${testData.salon.brandName}!`,
         ),
       })
     }).then(function () {
@@ -169,11 +168,15 @@ describe('Purchase a Gift Card', function () {
       .then((table) => {
         expect(table).to.deep.eq([
           ['Items Sold', '', ''],
-          [`Gift Card ${testData.actualVoucherCode}`, '1', '$50.00'],
-          ['Subtotal', '', '$50.00'],
+          [
+            `Gift Card ${testData.actualVoucherCode}`,
+            '1',
+            testData.displayPrice,
+          ],
+          ['Subtotal', '', testData.displayPrice],
           ['Voucher Tax', '0%', '$0.00'],
-          ['Grand Total', '', '$50.00'],
-          ['Credit', '', '$50.00'],
+          ['Grand Total', '', testData.displayPrice],
+          ['Credit', '', testData.displayPrice],
           ['Change', '', '$0.00'],
         ])
       })

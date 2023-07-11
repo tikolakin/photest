@@ -12,7 +12,6 @@ export default class EmailClient {
   private emailAddress: string
 
   constructor(apiKey?: string, namespace?: string) {
-    console.log(Cypress.env())
     this.NAME_SPACE = Cypress.env('TESTMAIL_NAME_SPACE') || namespace
     this.API_KEY = Cypress.env('TESTMAIL_API_KEY') || apiKey
     const emailTag = this.generateEmailTag()
@@ -50,7 +49,7 @@ export default class EmailClient {
       method: 'GET',
       url: this.ENDPOINT,
       qs: params,
-      timeout: Cypress.config('responseTimeout') * 3 // Testmail could be slow
+      timeout: Cypress.config('responseTimeout') * 3, // Testmail could be slow
     }).then((res) => {
       if (filter?.subject) {
         const filteredEmail = res.body.emails.filter((email) => {

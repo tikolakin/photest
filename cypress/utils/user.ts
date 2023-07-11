@@ -1,5 +1,4 @@
-import { EmailClient } from '@utils'
-import { allFakers, allLocales, Faker } from '@faker-js/faker'
+import { allFakers, Faker } from '@faker-js/faker'
 
 type SupportedLocales = 'en_IE' | 'en_GB' | 'en_US' | 'en_AU' | 'de'
 
@@ -19,7 +18,7 @@ class User {
 
   private createAddress() {
     const defaultAttributes = {
-      email: new EmailClient().getEmailAddress(),
+      email: this.faker.internet.email(),
       firstName: this.faker.person.firstName(),
       lastName: this.faker.person.lastName(),
     }
